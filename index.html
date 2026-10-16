@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
+  <meta name="theme-color" content="#222222">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <title>ぷよぷよテトリス</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <!-- 画面全体（ウィンドウの大きさに合わせて拡大縮小する） -->
+  <div id="stage">
+    <div id="menu">
+      <h1>ぷよぷよテトリス</h1>
+
+      <h2>ひとりで</h2>
+      <p>
+        <button data-solo="tetris">1 : テトリス</button>
+        <button data-solo="puyo">2 : ぷよぷよ</button>
+      </p>
+
+      <h2>対戦</h2>
+      <table class="versus-form">
+        <tr>
+          <th></th>
+          <th>操作</th>
+          <th>種類</th>
+          <th>AIの強さ</th>
+          <th>AIのモード（テトリスのみ）</th>
+        </tr>
+        <tr>
+          <th>1P</th>
+          <td data-label="操作">
+            <select id="p1-control">
+              <option value="human">あなた</option>
+              <option value="ai">AI（観戦）</option>
+            </select>
+          </td>
+          <td data-label="種類">
+            <select id="p1-type">
+              <option value="tetris">テトリス</option>
+              <option value="puyo">ぷよぷよ</option>
+            </select>
+          </td>
+          <td data-label="AIの強さ">
+            <select id="p1-level">
+              <option value="easy">よわい</option>
+              <option value="normal" selected>ふつう</option>
+              <option value="hard">つよい</option>
+            </select>
+          </td>
+          <td data-label="AIのモード">
+            <select id="p1-mode">
+              <option value="balance">バランス</option>
+              <option value="ren">REN特化</option>
+              <option value="pc">パフェ特化</option>
+              <option value="dig">掘り特化</option>
+            </select>
+          </td>
+        </tr>
+        <tr>
+          <th>2P</th>
+          <td data-label="操作">AI</td>
+          <td data-label="種類">
+            <select id="p2-type">
+              <option value="tetris">テトリス</option>
+              <option value="puyo" selected>ぷよぷよ</option>
+            </select>
+          </td>
+          <td data-label="AIの強さ">
+            <select id="p2-level">
+              <option value="easy">よわい</option>
+              <option value="normal" selected>ふつう</option>
+              <option value="hard">つよい</option>
+            </select>
+          </td>
+          <td data-label="AIのモード">
+            <select id="p2-mode">
+              <option value="balance">バランス</option>
+              <option value="ren">REN特化</option>
+              <option value="pc">パフェ特化</option>
+              <option value="dig">掘り特化</option>
+            </select>
+          </td>
+        </tr>
+      </table>
+      <p>
+        先取：
+        <select id="first-to">
+          <option value="1">1本</option>
+          <option value="2" selected>2本</option>
+          <option value="3">3本</option>
+        </select>
+        <button id="start-versus">3 : 対戦開始</button>
+      </p>
+
+      <p class="help">
+        操作：← → 移動 / ↓ ソフトドロップ / ↑ ハードドロップ（テトリスのみ）/ X 右回転 / Z 左回転 /
+        C・Shift ホールド（テトリスのみ）/ Esc・P ポーズ / M 効果音（<span class="sound-state">ON</span>）
+      </p>
+    </div>
+
+    <div id="game" class="match" hidden></div>
+  </div>
+
+  <!-- 対戦中、2人の盤面の間に置く情報欄 -->
+  <div id="center-info" class="center-info"></div>
+
+  <!-- カウントダウンやラウンド結果を盤面の上に大きく出す -->
+  <div id="overlay" class="overlay" hidden></div>
+
+  <!-- スマホ用の画面ボタン（タッチ操作のとき、人が操作している間だけ出す） -->
+  <div id="touch-controls" hidden>
+    <div class="touch-group touch-left">
+      <button class="only-tetris" data-key="KeyC">HOLD</button>
+      <button class="only-tetris wide" data-key="ArrowUp">DROP</button>
+      <button data-dir="-1">◀</button>
+      <button data-softdrop>▼</button>
+      <button data-dir="1">▶</button>
+    </div>
+    <div class="touch-group touch-right">
+      <button data-key="KeyZ">↺</button>
+      <button data-key="KeyX">↻</button>
+    </div>
+  </div>
+  <button id="touch-pause" hidden>II</button>
+
+  <div id="pause-menu" class="dialog" hidden>
+    <h2>ポーズ</h2>
+    <p><button data-action="resume">再開（Esc / P）</button></p>
+    <p><button data-action="restart">リスタート（R）</button></p>
+    <p><button data-action="menu">メニューへ（Q）</button></p>
+    <p>効果音: <span class="sound-state">ON</span>（M で切替）</p>
+  </div>
+
+  <div id="result-menu" class="dialog" hidden>
+    <h2 id="result-text"></h2>
+    <p><button data-action="restart">もう一度（R）</button></p>
+    <p><button data-action="menu">メニューへ（Q）</button></p>
+  </div>
+
+  <script src="js/input.js"></script>
+  <script src="js/sound.js"></script>
+  <script src="js/effects.js"></script>
+  <script src="js/tetris.js"></script>
+  <script src="js/puyo.js"></script>
+  <script src="js/garbage.js"></script>
+  <script src="js/tetris-view.js"></script>
+  <script src="js/puyo-view.js"></script>
+  <script src="js/puyo-ai-core.js"></script>
+  <script src="js/tetris-ai-core.js"></script>
+  <script src="js/ai.js"></script>
+  <script src="js/match.js"></script>
+  <script src="js/main.js"></script>
+</body>
+</html>

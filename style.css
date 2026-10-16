@@ -1,0 +1,312 @@
+body {
+  margin: 0;
+  background: #222;
+  color: #eee;
+  font-family: sans-serif;
+  overflow: hidden;
+}
+
+/* 中身を本来の大きさで並べてから、ウィンドウに収まるよう main.js で拡大縮小する */
+#stage {
+  position: absolute;
+  top: 0;
+  left: 50%;
+  padding: 16px;
+  transform-origin: top center;
+  white-space: nowrap;
+}
+
+[hidden] {
+  display: none !important;
+}
+
+#menu h2 {
+  margin: 24px 0 8px;
+  font-size: 20px;
+}
+
+#menu button,
+.dialog button {
+  font-size: 16px;
+  padding: 6px 14px;
+}
+
+.versus-form th,
+.versus-form td {
+  padding: 4px 10px;
+  text-align: left;
+}
+
+/* 対戦・一人用の盤面を横に並べる */
+.match {
+  display: flex;
+  align-items: flex-start;
+  gap: 32px;
+}
+
+/* 1人分：名前、盤面（と HOLD・NEXT）、その下にスコアなど */
+.player {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+}
+
+.player-name {
+  font-size: 22px;
+  font-weight: bold;
+  min-height: 1.3em;
+}
+
+.field {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+}
+
+.side {
+  width: 144px;
+}
+
+.side p {
+  margin: 0 0 4px;
+}
+
+.box {
+  background: #000;
+  border: 2px solid #888;
+}
+
+.garbage-bar {
+  background: #111;
+  border: 2px solid #444;
+}
+
+.incoming {
+  color: #f66;
+  font-weight: bold;
+}
+
+.stats {
+  display: flex;
+  gap: 24px;
+  font-size: 20px;
+  font-weight: bold;
+  min-height: 1.5em;
+}
+
+.stats p {
+  margin: 0;
+}
+
+.center-info {
+  align-self: center;
+  text-align: center;
+  min-width: 160px;
+  font-size: 18px;
+}
+
+.center-info .score-line {
+  font-size: 40px;
+  font-weight: bold;
+  margin: 0;
+}
+
+.center-info .margin {
+  color: #fc6;
+  font-size: 14px;
+  white-space: normal;
+}
+
+.help {
+  margin-top: 24px;
+  font-size: 13px;
+  color: #aaa;
+  white-space: normal;
+  max-width: 720px;
+}
+
+/* カウントダウンなどの大きな文字（拡大縮小の影響を受けないよう画面に固定） */
+.overlay {
+  position: fixed;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 96px;
+  font-weight: bold;
+  color: #fff;
+  text-shadow: 0 0 12px #000, 0 0 4px #000;
+  pointer-events: none;
+}
+
+.dialog {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background: rgba(20, 20, 20, 0.95);
+  border: 2px solid #888;
+  border-radius: 8px;
+  padding: 16px 40px;
+  text-align: center;
+}
+
+/* ---- スマホ・縦長の画面 ---- */
+body {
+  -webkit-user-select: none;
+  user-select: none;
+  -webkit-touch-callout: none;
+  -webkit-tap-highlight-color: transparent;
+  touch-action: manipulation;
+}
+
+/* 画面ボタン（タッチ操作の間だけ main.js が表示する） */
+#touch-controls {
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 200px;
+  box-sizing: border-box;
+  padding: 8px 12px calc(8px + env(safe-area-inset-bottom));
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  touch-action: none;
+  z-index: 5;
+}
+
+.touch-group {
+  display: grid;
+  gap: 8px;
+}
+
+.touch-left {
+  width: 58%;
+  grid-template-columns: repeat(3, 1fr);
+  grid-auto-rows: 80px;
+}
+
+.touch-right {
+  width: 38%;
+  grid-template-columns: 1fr 1fr;
+  grid-auto-rows: 120px;
+}
+
+#touch-controls button {
+  font-size: 22px;
+  font-weight: bold;
+  color: #eee;
+  background: rgba(255, 255, 255, 0.14);
+  border: 2px solid rgba(255, 255, 255, 0.3);
+  border-radius: 12px;
+  touch-action: none;
+}
+
+#touch-controls button.active {
+  background: rgba(255, 255, 255, 0.4);
+}
+
+#touch-controls button.wide {
+  grid-column: span 2;
+}
+
+/* ぷよにはホールドとハードドロップがない（場所は空けたままにして、ボタンの位置を変えない） */
+#touch-controls[data-type="puyo"] .only-tetris {
+  visibility: hidden;
+}
+
+#touch-pause {
+  position: fixed;
+  top: 8px;
+  right: 8px;
+  width: 44px;
+  height: 44px;
+  font-size: 18px;
+  font-weight: bold;
+  color: #eee;
+  background: rgba(255, 255, 255, 0.14);
+  border: 2px solid rgba(255, 255, 255, 0.3);
+  border-radius: 8px;
+  z-index: 5;
+}
+
+/* 縦長：盤面を縦に並べる。自分を大きく、相手を小さくして上に置く */
+body.portrait .match {
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+}
+
+body.portrait .player.opponent {
+  order: -2;
+  zoom: 0.4;
+}
+
+body.portrait .center-info {
+  order: -1;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  min-width: 0;
+  font-size: 14px;
+}
+
+body.portrait .center-info p {
+  margin: 0;
+}
+
+body.portrait .center-info .score-line {
+  font-size: 28px;
+}
+
+/* 縦長：対戦メニューは表をやめて、1行を1枚のカードにする */
+body.portrait #menu {
+  width: 340px;
+  white-space: normal;
+}
+
+body.portrait #menu button {
+  font-size: 18px;
+  padding: 10px 16px;
+}
+
+body.portrait .versus-form,
+body.portrait .versus-form tbody,
+body.portrait .versus-form tr,
+body.portrait .versus-form th,
+body.portrait .versus-form td {
+  display: block;
+}
+
+body.portrait .versus-form tr:first-child {
+  display: none;
+}
+
+body.portrait .versus-form tr {
+  margin: 8px 0;
+  padding: 8px;
+  border: 1px solid #444;
+  border-radius: 6px;
+}
+
+body.portrait .versus-form th,
+body.portrait .versus-form td {
+  padding: 4px 6px;
+}
+
+body.portrait .versus-form td::before {
+  content: attr(data-label);
+  display: inline-block;
+  width: 7em;
+  color: #aaa;
+}
+
+body.portrait .versus-form select {
+  font-size: 16px;
+}
+
+body.portrait .help {
+  max-width: 340px;
+}

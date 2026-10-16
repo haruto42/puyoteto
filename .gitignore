@@ -1,0 +1,6 @@
+﻿# 再生成できるもの・このPC用の設定は含めない
+dist/
+.claude/
+CLAUDE.md
+server.py
+__pycache__/
