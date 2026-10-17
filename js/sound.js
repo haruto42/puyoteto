@@ -201,6 +201,14 @@ const Sound = {
     this.tone({ freq: 100, duration: 0.15, type: "triangle", volume: 0.25, delay: 0.05, slideTo: 60 });
   },
 
+  // 大きな予告が来たときの警告：高低2つの音を速く交互に鳴らす
+  alert() {
+    [880, 1175, 880, 1175, 880, 1175].forEach((freq, i) => {
+      this.tone({ freq, duration: 0.1, type: "square", volume: 0.22, delay: i * 0.12 });
+      this.tone({ freq, duration: 0.1, type: "sine", volume: 0.3, delay: i * 0.12 });
+    });
+  },
+
   // カウントダウン（GO のときは高い音）
   countdown(isGo) {
     if (isGo) {

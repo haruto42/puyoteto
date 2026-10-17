@@ -175,6 +175,50 @@ class TetrisView {
     }
   }
 
+  // ゴースト：中は薄く白っぽく、輪郭（ミノの外側の縁）は元の色のまま濃く描く
+  drawGhost(shape, x, y, color) {
+    const { ctx } = this;
+    const filled = (dx, dy) => Boolean(shape[dy] && shape[dy][dx]);
+    ctx.save();
+    shape.forEach((row, dy) => {
+      row.forEach((cell, dx) => {
+        if (!cell) return;
+        const left = (x + dx) * CELL;
+        const top = (y + dy) * CELL;
+        ctx.globalAlpha = 0.12;
+        ctx.fillStyle = color;
+        ctx.fillRect(left, top, CELL - 1, CELL - 1);
+        ctx.globalAlpha = 0.14;
+        ctx.fillStyle = "#ffffff";
+        ctx.fillRect(left, top, CELL - 1, CELL - 1);
+      });
+    });
+    ctx.globalAlpha = 1;
+    ctx.strokeStyle = color;
+    ctx.lineWidth = 3;
+    ctx.beginPath();
+    shape.forEach((row, dy) => {
+      row.forEach((cell, dx) => {
+        if (!cell) return;
+        // 線が盤面のマスの内側に収まるよう 1.5px 引っ込める
+        const l = (x + dx) * CELL + 1.5;
+        const t = (y + dy) * CELL + 1.5;
+        const r = (x + dx + 1) * CELL - 2.5;
+        const b = (y + dy + 1) * CELL - 2.5;
+        if (!filled(dx, dy - 1)) (ctx.moveTo(l, t), ctx.lineTo(r, t));
+        if (!filled(dx, dy + 1)) (ctx.moveTo(l, b), ctx.lineTo(r, b));
+        if (!filled(dx - 1, dy)) (ctx.moveTo(l, t), ctx.lineTo(l, b));
+        if (!filled(dx + 1, dy)) (ctx.moveTo(r, t), ctx.lineTo(r, b));
+      });
+    });
+    ctx.stroke();
+    // 暗い色（紫・青）でも黒い背景で見えるよう、同じ線に薄く白を重ねる
+    ctx.globalAlpha = 0.3;
+    ctx.strokeStyle = "#ffffff";
+    ctx.stroke();
+    ctx.restore();
+  }
+
   drawCell(x, y, color) {
     this.ctx.fillStyle = color;
     this.ctx.fillRect(x * CELL, y * CELL, CELL - 1, CELL - 1);
@@ -241,16 +285,8 @@ class TetrisView {
     // 待ち時間中は操作中のミノがない
     if (game.piece && !game.gameOver) {
       const { shape, x, y, type } = game.piece;
-      const ghostY = game.ghostY();
-      shape.forEach((row, dy) => {
-        row.forEach((cell, dx) => {
-          if (!cell) return;
-          // ゴーストは半透明で先に描き、操作中のミノと重なったら操作中のミノを優先
-          ctx.globalAlpha = 0.3;
-          this.drawCell(x + dx, ghostY + dy, COLORS[type]);
-          ctx.globalAlpha = 1;
-        });
-      });
+      // ゴーストは先に描き、操作中のミノと重なったら操作中のミノを優先
+      this.drawGhost(shape, x, game.ghostY(), COLORS[type]);
       shape.forEach((row, dy) => {
         row.forEach((cell, dx) => {
           if (cell) this.drawCell(x + dx, y + dy, COLORS[type]);

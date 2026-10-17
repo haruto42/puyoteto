@@ -294,12 +294,35 @@ class Match {
       player.view.update(dt);
     }
 
-    if (this.state === "playing") this.checkGameOver();
+    if (this.state === "playing") {
+      this.checkAlerts();
+      this.checkGameOver();
+    }
     else if (this.state === "roundOver") {
       this.timer -= dt;
       if (this.timer <= 0) {
         this.ui.hideOverlay();
         this.startRound();
+      }
+    }
+  }
+
+  // 大きな予告が来たら、その盤面を赤く光らせ、警告音を鳴らす。基準を下回るまでは二重に鳴らさない
+  // 音は人が操作している盤面の分だけ（観戦のときは両方）
+  checkAlerts() {
+    for (const p of this.players) {
+      const o = p.opponent;
+      if (!o) continue;
+      const incoming = p.garbage.total;
+      const big = p.isTetris
+        ? incoming >= ALERT_TETRIS_LINES
+        : incoming >= ALERT_PUYO_NUISANCE || (o.isTetris && o.garbage.gauge >= ALERT_PUYO_LAMPS);
+      if (big && !p.garbage.alerted) {
+        p.garbage.alerted = true;
+        p.view.effects.flash("#ff3b3b", 500, 0.3);
+        if (p.config.control === "human" || !this.human) Sound.alert();
+      } else if (!big) {
+        p.garbage.alerted = false;
       }
     }
   }

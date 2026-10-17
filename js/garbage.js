@@ -24,6 +24,16 @@ const GARBAGE_MULTIPLIER = {
   puyoToPuyo: 1.0,
 };
 
+// 大きな予告が来たときの警告（画面を赤く光らせ、警告音を鳴らす）の基準
+// ぷよ側：テトリスのランプが11以上（おじゃまぷよ33個相当）になると警告が出る。これは解析元に書かれている
+//   参考: http://clocklaboratory.s1001.xrea.com/game/others/puyotetris.html
+// テトリス側：ぷよの予告の「大」（6段）以上。予告の記号の大きさは公式の仕様
+//   参考: https://puyonexus.com/wiki/Nuisance_queue
+// 警告「音」の仕様は調べても見つからなかったので、鳴らす条件を上の基準に合わせて、音は独自に作っている
+const ALERT_PUYO_NUISANCE = 33;
+const ALERT_PUYO_LAMPS = 11;
+const ALERT_TETRIS_LINES = 6;
+
 const PUYO_TARGET_POINTS = 70; // ぷよ同士：70点でおじゃまぷよ1個（ぷよぷよ通）
 const TETRIS_MAX_RISE_VS_PUYO = 7; // ぷよから受けたおじゃまは一度に7段までせり上がる
 
@@ -86,6 +96,7 @@ class GarbageState {
     this.fraction = 0; // 送る量に倍率をかけて出た端数（次の攻撃に持ち越す）
     this.offsetCarry = 0; // ぷよがテトリスのおじゃまを相殺するときの持ち越し点
     this.counterStarted = false; // ぷよ vs テトリス：相殺し切って攻撃に移ったか
+    this.alerted = false; // 大きな予告の警告を出している間 true（下がるまで二重に鳴らさない）
     this.hole = Math.floor(Math.random() * COLS); // テトリスのおじゃまの穴の列
   }
 

@@ -118,16 +118,19 @@ class PuyoView {
     if (chain >= 3) this.effects.flash("#ffffff", 220, 0.1 + Math.min(chain, 8) * 0.02);
   }
 
-  // ゴースト：中はうっすら、枠線をぷよの色で描く。highlight のときは太い白線
+  // ゴースト：中は薄く白っぽく、枠線はぷよの色のまま濃く描く。highlight のときは太い白線
   drawGhost(context, px, py, size, color, highlight) {
     const cx = px + size / 2;
     const cy = py + size / 2;
-    const lineWidth = highlight ? 6 : 3;
+    const lineWidth = highlight ? 6 : 4;
     context.save();
-    context.globalAlpha = 0.15;
-    context.fillStyle = PUYO_DRAW_COLORS[color];
     context.beginPath();
     context.arc(cx, cy, size / 2 - 1, 0, Math.PI * 2);
+    context.globalAlpha = 0.08;
+    context.fillStyle = PUYO_DRAW_COLORS[color];
+    context.fill();
+    context.globalAlpha = 0.14;
+    context.fillStyle = "#ffffff";
     context.fill();
     context.globalAlpha = 1;
     context.lineWidth = lineWidth;
