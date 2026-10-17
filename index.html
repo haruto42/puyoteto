@@ -113,16 +113,18 @@
 
   <!-- スマホ用の画面ボタン（タッチ操作のとき、人が操作している間だけ出す） -->
   <div id="touch-controls" hidden>
+    <!-- 左：回転とホールド（左から 左回転・右回転・ホールド） -->
     <div class="touch-group touch-left">
-      <button class="only-tetris" data-key="KeyC">HOLD</button>
-      <button class="only-tetris wide" data-key="ArrowUp">DROP</button>
-      <button data-dir="-1">◀</button>
-      <button data-softdrop>▼</button>
-      <button data-dir="1">▶</button>
-    </div>
-    <div class="touch-group touch-right">
       <button data-key="KeyZ">↺</button>
       <button data-key="KeyX">↻</button>
+      <button class="only-tetris" data-key="KeyC">HOLD</button>
+    </div>
+    <!-- 右：移動（上段 ハードドロップ、中段 左右、下段 ソフトドロップ） -->
+    <div class="touch-group touch-right">
+      <button class="only-tetris wide" data-key="ArrowUp">DROP</button>
+      <button data-dir="-1">◀</button>
+      <button data-dir="1">▶</button>
+      <button class="wide" data-softdrop>▼</button>
     </div>
   </div>
   <button id="touch-pause" hidden>II</button>

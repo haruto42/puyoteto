@@ -183,19 +183,20 @@ body {
 }
 
 .touch-left {
-  width: 58%;
-  grid-template-columns: repeat(3, 1fr);
-  grid-auto-rows: 80px;
+  width: 52%;
+  grid-template-columns: repeat(3, minmax(0, 1fr)); /* 文字の長さで列の幅が変わらないようにする */
+  grid-auto-rows: 100px;
 }
 
 .touch-right {
-  width: 38%;
-  grid-template-columns: 1fr 1fr;
-  grid-auto-rows: 120px;
+  width: 44%;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  grid-auto-rows: 56px;
 }
 
 #touch-controls button {
-  font-size: 22px;
+  padding: 0;
+  font-size: 20px;
   font-weight: bold;
   color: #eee;
   background: rgba(255, 255, 255, 0.14);
@@ -206,6 +207,10 @@ body {
 
 #touch-controls button.active {
   background: rgba(255, 255, 255, 0.4);
+}
+
+#touch-controls button[data-key="KeyC"] {
+  font-size: 15px;
 }
 
 #touch-controls button.wide {
