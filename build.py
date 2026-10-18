@@ -1,15 +1,15 @@
-"""ゲーム一式を1つのHTMLファイルにまとめ、そのbase64版も作る。
+"""ゲーム一式を1つのHTMLファイルにまとめる。
 
 index.html の <link rel="stylesheet" href="..."> と <script src="..."></script> を、
 中身を埋め込んだ <style> / <script> に置き換える。
 
 使い方: python build.py
-出力:   dist/puyotetris.html         … ダブルクリックで遊べる1ファイル版
-        dist/site/index.html        … 上と同じ中身。フォルダごと Web に公開するとき用
-        dist/puyotetris.base64.txt  … 上のHTML（UTF-8）をbase64にした文字列
+出力:   dist/puyotetris.html  … ダブルクリックで遊べる1ファイル版
+
+Web への公開（Cloudflare Pages）は Git と同期していて、ルートの index.html（js・css は別ファイル）をそのまま使うので、
+この1ファイル版は要らない。
 """
 
-import base64
 import os
 import re
 
@@ -20,6 +20,13 @@ DIST = os.path.join(ROOT, "dist")
 def read(relative_path):
     with open(os.path.join(ROOT, relative_path), encoding="utf-8") as f:
         return f.read()
+
+
+def write(path, text):
+    os.makedirs(os.path.dirname(path), exist_ok=True)
+    with open(path, "w", encoding="utf-8", newline="\n") as f:
+        f.write(text)
+    print(f"{os.path.relpath(path, ROOT)}  {len(text.encode('utf-8')):,} bytes")
 
 
 def check_embeddable(content, tag, path):
@@ -48,24 +55,7 @@ def main():
     html = re.sub(r'<link rel="stylesheet" href="([^"]+)">', inline_style, html)
     html = re.sub(r'<script src="([^"]+)"></script>', inline_script, html)
 
-    os.makedirs(DIST, exist_ok=True)
-    html_path = os.path.join(DIST, "puyotetris.html")
-    with open(html_path, "w", encoding="utf-8", newline="\n") as f:
-        f.write(html)
-
-    # Cloudflare Pages などに置く用：フォルダごとアップロードできるよう index.html という名前でも出す
-    site_dir = os.path.join(DIST, "site")
-    os.makedirs(site_dir, exist_ok=True)
-    with open(os.path.join(site_dir, "index.html"), "w", encoding="utf-8", newline="\n") as f:
-        f.write(html)
-
-    encoded = base64.b64encode(html.encode("utf-8")).decode("ascii")
-    txt_path = os.path.join(DIST, "puyotetris.base64.txt")
-    with open(txt_path, "w", encoding="ascii", newline="\n") as f:
-        f.write(encoded)
-
-    print(f"{os.path.relpath(html_path, ROOT)}  {len(html.encode('utf-8')):,} bytes")
-    print(f"{os.path.relpath(txt_path, ROOT)}  {len(encoded):,} chars")
+    write(os.path.join(DIST, "puyotetris.html"), html)
 
 
 if __name__ == "__main__":
